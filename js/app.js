@@ -90,6 +90,9 @@ class Player {
       break;
     default:
     }
+    if (this.row === 0) {
+      win();
+    }
   }
 
   goBack() {
@@ -106,15 +109,32 @@ class Player {
   }
 }
 
+function win() {
+  setTimeout(function () {
+    let result = confirm("You Win!\n Would you like to play again?");
+    if (result) {
+      location.reload();
+    } else {
+      stopGame();
+    }
+  }, 100);
+  player.handleInput = function () {};
+}
+
 let player = new Player();
 let enemy = new Enemy();
 
 let allEnemies = enemyRows.map(row => new Enemy(row));
 
-setInterval(function () {
+let genEnemies = setInterval(function () {
   let randomRow = Math.ceil((1 - Math.random()) * 3)
   allEnemies.push(new Enemy(randomRow));
 }, 2000);
+
+function stopGame() {
+  clearInterval(genEnemies);
+  allEnemies = [];
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
