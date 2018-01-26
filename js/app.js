@@ -6,12 +6,12 @@ const xUnit = 101,
 
 // Enemies our player must avoid
 class Enemy {
+  /**
+   * @description Represents an enemy bug.
+   * @constructor
+   * @param {number} row - The row where the bug run.
+   */
   constructor(row) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = -(Math.random() * 300);
     this.row = row;
@@ -19,13 +19,11 @@ class Enemy {
     this.speed = (Math.random() + 1) * 75;
   }
 
-  // Update the enemy's position, required method for game
-  // Parameter: dt, a time delta between ticks
+  /**
+   * @description Update a bug's position.
+   * @param {float} dt - The interval for bug to run.
+   */
   update(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-
     if (this.x > xUnit * numCols) {
       this.goDie();
     }
@@ -37,6 +35,9 @@ class Enemy {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
   }
 
+  /**
+   * @description Remove bugs whose positions are out of range.
+   */
   goDie() {
     allEnemies.splice(allEnemies.indexOf(this), 1);
   }
@@ -46,27 +47,44 @@ class Enemy {
 // This class requires an update(), render() and
 // a handleInput() method.
 
+// The player you control
 class Player {
+  /**
+   * @description Represents a player.
+   * @constructor
+   */
   constructor() {
     this.sprite = 'images/char-boy.png';
     this.column = 2;
     this.row = 5;
   }
 
+  /**
+   * @description Calculate a player's x-axis value using its column value.
+   */
   x() {
     return this.column * xUnit;
   }
 
+  /**
+   * @description Calculate a player's y-axis value using its row value.
+   */
   y() {
     return this.row * yUnit - 10;
   }
 
+  // Required method for the game engine.
   update() {}
 
+  // Required method for the game. Render a player's image.
   render() {
     ctx.drawImage(Resources.get(this.sprite), this.x(), this.y());
   }
 
+  /**
+   * @description Update a player's column and row according to keyboard events.
+   * @param {string} to - The direction a player is going.
+   */
   handleInput(to) {
     if ((to === 'left' && this.column === 0) ||
       (to === 'right' && this.column === 4) ||
@@ -94,11 +112,17 @@ class Player {
     }
   }
 
+  /**
+   * @description Make a player back to the start point once it encounter a bug.
+   */
   goBack() {
     this.column = 2;
     this.row = 5;
   }
 
+  /**
+   * @description Check whether a play has encountered a bug.
+   */
   checkCollisions() {
     for (let enemy of allEnemies) {
       if (enemy.row === this.row && (enemy.x + 80 > this.x() && enemy.x < this.x() + 80)) {
@@ -108,6 +132,9 @@ class Player {
   }
 }
 
+/**
+ * @description Display message to announce victory.
+ */
 function win() {
   setTimeout(function () {
     let result = confirm("You Win!\n Would you like to play again?");
@@ -130,6 +157,9 @@ let genEnemies = setInterval(function () {
   allEnemies.push(new Enemy(randomRow));
 }, 2000);
 
+/**
+ * @description Stop a game by removing all bugs.
+ */
 function stopGame() {
   clearInterval(genEnemies);
   allEnemies = [];
