@@ -14,6 +14,7 @@ class Enemy {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = -(Math.random() * 300);
+    this.row = row;
     this.y = row * yUnit - 20;
     this.speed = (Math.random() + 1) * 75;
   }
@@ -39,7 +40,6 @@ class Enemy {
 
   goDie() {
     allEnemies.splice(allEnemies.indexOf(this), 1);
-    console.log(allEnemies);
   }
 }
 
@@ -50,31 +50,58 @@ class Enemy {
 class Player {
   constructor() {
     this.sprite = 'images/char-boy.png';
-    this.x = 2 * xUnit;
-    this.y = 5 * yUnit - 10;
+    this.column = 2;
+    this.row = 5;
+  }
+
+  x() {
+    return this.column * xUnit;
+  }
+
+  y() {
+    return this.row * yUnit - 10;
   }
 
   update() {}
 
   render() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x(), this.y());
   }
 
   handleInput(to) {
+    if ((to === 'left' && this.column === 0) ||
+      (to === 'right' && this.column === 4) ||
+      (to === 'up' && this.row === 0) ||
+      (to === 'down' && this.row === 5)) {
+      return;
+    }
     switch (to) {
     case 'left':
-      this.x -= xUnit;
+      this.column -= 1;
       break;
     case 'right':
-      this.x += xUnit;
+      this.column += 1;
       break;
     case 'up':
-      this.y -= yUnit;
+      this.row -= 1;
       break;
     case 'down':
-      this.y += yUnit;
+      this.row += 1;
       break;
     default:
+    }
+  }
+
+  goBack() {
+    this.column = 2;
+    this.row = 5;
+  }
+
+  checkCollisions() {
+    for (let enemy of allEnemies) {
+      if (enemy.row === this.row && (enemy.x + 80 > this.x() && enemy.x < this.x() + 80)) {
+        this.goBack();
+      }
     }
   }
 }
@@ -82,7 +109,7 @@ class Player {
 let player = new Player();
 let enemy = new Enemy();
 
-var allEnemies = enemyRows.map(row => new Enemy(row));
+let allEnemies = enemyRows.map(row => new Enemy(row));
 
 setInterval(function () {
   let randomRow = Math.ceil((1 - Math.random()) * 3)
