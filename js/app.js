@@ -26,7 +26,6 @@ class Enemy {
     // which will ensure the game runs at the same speed for
     // all computers.
 
-    // TODO: learn to use proxy
     if (this.x > xUnit * numCols) {
       this.goDie();
     }
